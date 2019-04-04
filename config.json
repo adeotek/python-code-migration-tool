@@ -3,11 +3,8 @@
     "rules": [
         {
             "regex": "'command_string'=>\\\"AjaxRequest\\(.*\\)->.*\\\",",
-            "replacement": "command_string"
-        },
-        {
-            "regex": "xxx-yyy",
-            "replacement": "bau"
+            "module": "ajax_request_replacer",
+            "method": "command_string"
         }
     ],
     "target_path": "d:\\zTemp\\code\\",

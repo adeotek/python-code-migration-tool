@@ -1,7 +1,5 @@
 import os
-import glob
-import re
-
+from importlib import import_module
 
 class CodeProcessor:
     _logger = None
@@ -27,16 +25,25 @@ class CodeProcessor:
         self._logger = app_logger
 
     def processFiles(self, rules=None):
-        # if not isinstance(reg_exp, str) or len(reg_exp) == 0:
-        #     raise Exception('Invalid regular expresion string')
-        # re_exp = re.compile(reg_exp, re.MULTILINE)
+        if not isinstance(rules, list) or len(rules) == 0:
+            raise Exception('Invalid processing rules')
+        adapters = []
+        for rule in rules:
+            try:
+                if not isinstance(rule['regex'], str) or len(rule['regex']) == 0:
+                    raise Exception('Invalid regular expresion')
+                if not isinstance(rule['module'], str) or len(rule['module']) == 0:
+                    raise Exception('Invalid module')
+                adapter_module = import_module(rule['module'])
+                adapters.append(adapter_module.ProcessorAdapter(regex=rule['regex'], method=rule['method'], app_logger=self._logger))
+            except Exception as e:
+                print("Unable to create processor adapter: [{}] -> {}". format(rule, e))
+                return
         print('Target path: ' + self._target_path)
         for dir_name in self._target_dirs:
             if os.path.exists(os.path.join(self._target_path, dir_name)):
                 for entry in self.getFilesFromPath(target_dir=os.path.join(self._target_path, dir_name), file_types=self._file_types, exception_files=self._exception_files, exception_directories=self._exception_directories):
-                    print('File: [{}] [{}]'.format(entry.path, entry.name))
-                    data = self.getMatchingStringsFromFile(entry.path, None)
-                    print(*data, sep="\n")
+                    self.processFile(entry.path, adapters)
 
     def getFilesFromPath(self, target_dir=None, file_types=None, exception_files=None, exception_directories=None):
         for entry in os.scandir(target_dir):
@@ -50,12 +57,19 @@ class CodeProcessor:
                     continue
                 yield from self.getFilesFromPath(target_dir=entry.path, file_types=file_types, exception_files=exception_files, exception_directories=exception_directories)
 
-    def getMatchingStringsFromFile(self, file, reg_exp):
-        # if not isinstance(reg_exp, object):
-        #     raise Exception('Invalid regular expresion object')
+    def processFile(self, file, adapters):
         if not os.path.exists(file):
-            return []
+            return
+        if not isinstance(adapters, list):
+            raise Exception('No adapters present')
+        file_content = None
         with open(file, 'r') as cfile:
             file_content = cfile.read()
-            # return reg_exp.findall(file_content)
-            return re.findall(r"'command_string'=>\"AjaxRequest\(.*\)->.*\",", file_content, re.MULTILINE)
+            cfile.close()
+        if isinstance(file_content, str) and len(file_content) > 0:
+            print('Processing file: [{}]...'.format(file))
+            for adapter in adapters:
+                file_content = adapter.processData(data=file_content)
+            with open(file, 'w') as cfile:
+                cfile.write(file_content)
+                cfile.close()
