@@ -1,0 +1,29 @@
+---
+debug_mode: 1
+rules:
+- regex: '''command_string''=>\"AjaxRequest\(.*\)->.*\",'
+  replacement: command_string
+- regex: xxx-yyy
+  replacement: bau
+target_path: d:\zTemp\code\
+target_dirs:
+- application
+- public_html
+file_types:
+- ".php"
+- ".phtml"
+exceptions:
+  directories:
+  - ".cache"
+  - ".logs"
+  - Configs
+  - repository
+  - tmp
+  - vendor
+  - lib
+  - resources
+  - css
+  - js
+  - images
+  files: []
+ 
