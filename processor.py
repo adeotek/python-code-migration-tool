@@ -24,26 +24,26 @@ class CodeProcessor:
             self._exception_directories = exceptions['directories']
         self._logger = app_logger
 
-    def processFiles(self, rules=None):
-        if not isinstance(rules, list) or len(rules) == 0:
+    def processFiles(self, tasks=None, dry_run=False):
+        if not isinstance(tasks, list) or len(tasks) == 0:
             raise Exception('Invalid processing rules')
         adapters = []
-        for rule in rules:
+        for task in tasks:
             try:
-                if not isinstance(rule['regex'], str) or len(rule['regex']) == 0:
-                    raise Exception('Invalid regular expresion')
-                if not isinstance(rule['module'], str) or len(rule['module']) == 0:
-                    raise Exception('Invalid module')
-                adapter_module = import_module(rule['module'])
-                adapters.append(adapter_module.ProcessorAdapter(regex=rule['regex'], method=rule['method'], app_logger=self._logger))
+                if not isinstance(task['module'], str) or len(task['module']) == 0:
+                    raise Exception('Invalid task module')
+                if not isinstance(task['rules'], list) or len(task['rules']) == 0:
+                    raise Exception('Invalid task rules')
+                adapter_module = import_module(task['module'])
+                adapters.append(adapter_module.ProcessorAdapter(rules=task['rules'], app_logger=self._logger))
             except Exception as e:
-                print("Unable to create processor adapter: [{}] -> {}". format(rule, e))
+                print("Unable to create processor adapter: [{}] -> {}". format(task, e))
                 return
         print('Target path: ' + self._target_path)
         for dir_name in self._target_dirs:
             if os.path.exists(os.path.join(self._target_path, dir_name)):
                 for entry in self.getFilesFromPath(target_dir=os.path.join(self._target_path, dir_name), file_types=self._file_types, exception_files=self._exception_files, exception_directories=self._exception_directories):
-                    self.processFile(entry.path, adapters)
+                    self.processFile(entry.path, adapters, dry_run)
 
     def getFilesFromPath(self, target_dir=None, file_types=None, exception_files=None, exception_directories=None):
         for entry in os.scandir(target_dir):
@@ -57,7 +57,7 @@ class CodeProcessor:
                     continue
                 yield from self.getFilesFromPath(target_dir=entry.path, file_types=file_types, exception_files=exception_files, exception_directories=exception_directories)
 
-    def processFile(self, file, adapters):
+    def processFile(self, file, adapters, dry_run):
         if not os.path.exists(file):
             return
         if not isinstance(adapters, list):
@@ -69,7 +69,7 @@ class CodeProcessor:
         if isinstance(file_content, str) and len(file_content) > 0:
             print('Processing file: [{}]...'.format(file))
             for adapter in adapters:
-                file_content = adapter.processData(data=file_content)
+                file_content = adapter.processData(data=file_content, dry_run=dry_run)
             with open(file, 'w') as cfile:
                 cfile.write(file_content)
                 cfile.close()

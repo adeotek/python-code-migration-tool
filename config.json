@@ -1,10 +1,21 @@
 {
     "debug_mode": 1,
-    "rules": [
+    "dry_run": 0,
+    "tasks": [
         {
-            "regex": "'command_string'=>\\\"AjaxRequest\\(.*\\)->.*\\\",",
             "module": "ajax_request_replacer",
-            "method": "command_string"
+            "rules": [
+                {
+                    "method": "command_string",
+                    "regex": "'command_string'=>\\\"AjaxRequest\\(.*\\)->.*\\\",",
+                    "params": {}
+                },
+                {
+                    "method": "onclick_legacy_prepare",
+                    "regex": "'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\\"AjaxRequest\\(.*\\)->.*\\\"\\),",
+                    "params": {}
+                }
+            ]
         }
     ],
     "target_path": "d:\\zTemp\\code\\",

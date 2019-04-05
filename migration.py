@@ -28,7 +28,7 @@ if __name__ == '__main__':
     try:
         code_processor = CodeProcessor(app_logger=app_log, target_path=app_cfg.get('target_path', None), target_dirs=app_cfg.get(
             'target_dirs', None), file_types=app_cfg.get('file_types', None), exceptions=app_cfg.get('exceptions', None))
-        code_processor.processFiles(app_cfg.get('rules', None))
+        code_processor.processFiles(tasks=app_cfg.get('tasks', None), dry_run=app_cfg.get('dry_run', False))
     except Exception as e:
         app_log.logger.exception('Failed to start the code processor: %s', e)
         print('Failed to start the code processor: ' + str(e))
