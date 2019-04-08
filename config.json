@@ -1,18 +1,18 @@
 {
-    "debug_mode": 1,
-    "dry_run": 0,
+    "debug_mode": 0,
+    "dry_run": false,
     "tasks": [
         {
             "module": "ajax_request_replacer",
             "rules": [
                 {
                     "method": "command_string",
-                    "regex": "'command_string'=>\\\"AjaxRequest\\(.*\\)->.*\\\",",
+                    "regex": "(?m)'command_string'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
                     "params": {}
                 },
                 {
                     "method": "onclick_legacy_prepare",
-                    "regex": "'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\\"AjaxRequest\\(.*\\)->.*\\\"\\),",
+                    "regex": "(?m)'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\),\\s*$",
                     "params": {}
                 }
             ]

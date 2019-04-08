@@ -54,8 +54,8 @@ class ProcessorAdapter(BaseProcessorAdapter):
             args = function
         if len(args) > 0:
             p_list = args.split(',')
-            params += "'module': " + p_list[0] + ","
-            params += "'method': " + p_list[1] + ","
+            params += "'module': " + p_list[0] + ", "
+            params += "'method': " + p_list[1] + ", "
             p_params = p_list[2] if len(p_list) > 2 else ''            
             t_params = self.processExtraParamsString(p_params)
             pp_params = t_params['params']

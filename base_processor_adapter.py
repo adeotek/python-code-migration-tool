@@ -22,7 +22,7 @@ class BaseProcessorAdapter:
             return task
         if not isinstance(rule['regex'], str) or len(rule['regex']) == 0:
             return task
-        task['regex'] = re.compile(rule['regex'], re.MULTILINE)
+        task['regex'] = re.compile(rule['regex'])
         task['method'] = getattr(self, rule['method'])
         task['method_name'] = rule['method']
         task['params'] = rule['params']

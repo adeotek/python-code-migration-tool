@@ -1,4 +1,5 @@
 import os
+import datetime
 from importlib import import_module
 
 class CodeProcessor:
@@ -27,6 +28,8 @@ class CodeProcessor:
     def processFiles(self, tasks=None, dry_run=False):
         if not isinstance(tasks, list) or len(tasks) == 0:
             raise Exception('Invalid processing rules')
+        print('--->Start processing path: {}...'.format(self._target_path))
+        start_time = datetime.datetime.now()
         adapters = []
         for task in tasks:
             try:
@@ -39,11 +42,11 @@ class CodeProcessor:
             except Exception as e:
                 print("Unable to create processor adapter: [{}] -> {}". format(task, e))
                 return
-        print('Target path: ' + self._target_path)
         for dir_name in self._target_dirs:
             if os.path.exists(os.path.join(self._target_path, dir_name)):
                 for entry in self.getFilesFromPath(target_dir=os.path.join(self._target_path, dir_name), file_types=self._file_types, exception_files=self._exception_files, exception_directories=self._exception_directories):
                     self.processFile(entry.path, adapters, dry_run)
+        print('<---Processing done in: {} sec.'.format((datetime.datetime.now() - start_time).total_seconds()))
 
     def getFilesFromPath(self, target_dir=None, file_types=None, exception_files=None, exception_directories=None):
         for entry in os.scandir(target_dir):
