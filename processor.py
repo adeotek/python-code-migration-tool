@@ -28,8 +28,9 @@ class CodeProcessor:
     def processFiles(self, tasks=None, dry_run=False):
         if not isinstance(tasks, list) or len(tasks) == 0:
             raise Exception('Invalid processing rules')
-        print('--->Start processing path: {}...'.format(self._target_path))
+        self._logger.logger.info('--->Start processing path: {}...'.format(self._target_path))
         start_time = datetime.datetime.now()
+        results_count = { 'files': 0, 'items': 0 }
         adapters = []
         for task in tasks:
             try:
@@ -40,13 +41,13 @@ class CodeProcessor:
                 adapter_module = import_module(task['module'])
                 adapters.append(adapter_module.ProcessorAdapter(rules=task['rules'], app_logger=self._logger))
             except Exception as e:
-                print("Unable to create processor adapter: [{}] -> {}". format(task, e))
+                self._logger.logger.exception("Unable to create processor adapter: [{}] -> {}". format(task, e))
                 return
         for dir_name in self._target_dirs:
             if os.path.exists(os.path.join(self._target_path, dir_name)):
                 for entry in self.getFilesFromPath(target_dir=os.path.join(self._target_path, dir_name), file_types=self._file_types, exception_files=self._exception_files, exception_directories=self._exception_directories):
-                    self.processFile(entry.path, adapters, dry_run)
-        print('<---Processing done in: {} sec.'.format((datetime.datetime.now() - start_time).total_seconds()))
+                    self.processFile(entry.path, adapters, results_count, dry_run)
+        self._logger.logger.info('<---Processing done in: {} sec. - {} occurrences in {} files'.format((datetime.datetime.now() - start_time).total_seconds(), results_count['items'], results_count['files']))
 
     def getFilesFromPath(self, target_dir=None, file_types=None, exception_files=None, exception_directories=None):
         for entry in os.scandir(target_dir):
@@ -60,19 +61,20 @@ class CodeProcessor:
                     continue
                 yield from self.getFilesFromPath(target_dir=entry.path, file_types=file_types, exception_files=exception_files, exception_directories=exception_directories)
 
-    def processFile(self, file, adapters, dry_run):
+    def processFile(self, file, adapters, results_count, dry_run):
         if not os.path.exists(file):
             return
         if not isinstance(adapters, list):
             raise Exception('No adapters present')
+        results_count['files'] += 1
         file_content = None
         with open(file, 'r') as cfile:
             file_content = cfile.read()
             cfile.close()
         if isinstance(file_content, str) and len(file_content) > 0:
-            print('Processing file: [{}]...'.format(file))
+            self._logger.logger.info('Processing file: [{}]...'.format(file))
             for adapter in adapters:
-                file_content = adapter.processData(data=file_content, dry_run=dry_run)
+                file_content = adapter.processData(data=file_content, results_count=results_count, dry_run=dry_run)
             with open(file, 'w') as cfile:
                 cfile.write(file_content)
                 cfile.close()

@@ -28,24 +28,25 @@ class BaseProcessorAdapter:
         task['params'] = rule['params']
         return task
 
-    def processData(self, data=None, dry_run=False):
+    def processData(self, data=None, results_count={}, dry_run=False):
         if not isinstance(data, str) or len(data) == 0:
             return data
         new_data = data
         try:
             for task in self._tasks:
-                new_data = self.applyTask(task, new_data, dry_run)
+                new_data = self.applyTask(task, new_data, results_count, dry_run)
         except Exception as e:
-            print('Data processing error: {}'.format(e))
+            self._logger.logger.exception('Data processing error: %s', e)
             new_data = data
         return new_data
 
-    def applyTask(self, task, data, dry_run):
+    def applyTask(self, task, data, results_count, dry_run):
         regex = task['regex']
         method = task['method']
         for item in regex.findall(data):
-            new_item = method(item)
-            print("\tMethod: [{}] \n\t\toriginal: {} \n\t\tprocessed: {}".format(
+            new_item = method(item, task['params'])
+            results_count['items'] += 1
+            self._logger.logger.info("\tMethod: [{}] \n\t\toriginal: {} \n\t\tprocessed: {}".format(
                 task['method_name'], item, new_item))
             if not dry_run:
                 data = data.replace(item, new_item)
