@@ -68,13 +68,15 @@ class CodeProcessor:
             raise Exception('No adapters present')
         results_count['files'] += 1
         file_content = None
-        with open(file, 'r') as cfile:
+        with open(file, 'r', newline='\n') as cfile:
             file_content = cfile.read()
             cfile.close()
         if isinstance(file_content, str) and len(file_content) > 0:
+            new_file_content = file_content
             self._logger.logger.info('Processing file: [{}]...'.format(file))
             for adapter in adapters:
                 file_content = adapter.processData(data=file_content, results_count=results_count, dry_run=dry_run)
-            with open(file, 'w') as cfile:
-                cfile.write(file_content)
-                cfile.close()
+            if new_file_content != file_content:
+                with open(file, 'w', newline='\n') as cfile:
+                    cfile.write(file_content)
+                    cfile.close()

@@ -1,63 +1,11 @@
 {
     "debug_mode": 11,
     "dry_run": false,
-    "tasks": [
-        {
-            "module": "ajax_request_replacer",
-            "rules": [
-                {
-                    "method": "command_string",
-                    "regex": "(?m)'command_string'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
-                    "params": {}
-                },
-                {
-                    "method": "onclick_str",
-                    "regex": "(?m)'onclick_str'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
-                    "params": {}
-                },
-                {
-                    "method": "tab_ajax_content",
-                    "regex": "(?m)'content'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
-                    "params": {}
-                },
-                {
-                    "method": "legacy_execute",
-                    "regex": "(?m)NApp::Ajax\\(\\)->LegacyExecute\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\);\\s*$",
-                    "params": {}
-                },
-                {
-                    "method": "action_legacy_prepare",
-                    "regex": "(?m)'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\),\\s*$",
-                    "params": { "action": "onclick", "end_char": "," }
-                },
-                {
-                    "method": "action_legacy_prepare",
-                    "regex": "(?m)'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\)\\]\\s*$",
-                    "params": { "action": "onclick", "end_char": "]" }
-                },
-                {
-                    "method": "action_legacy_prepare",
-                    "regex": "(?m)'onchange'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\),\\s*$",
-                    "params": { "action": "onchange", "end_char": "," }
-                },
-                {
-                    "method": "action_legacy_prepare",
-                    "regex": "(?m)'onchange'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\)\\]\\s*$",
-                    "params": { "action": "onchange", "end_char": "]" }
-                },
-                {
-                    "method": "echo_legacy_prepare",
-                    "regex": "(?m)\\=\\\"<\\?php echo NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\);\\s*?\\?>\\s*\\\"",
-                    "params": {}
-                }
-
-            ]
-        }
-    ],
-    "target_path": "d:\\zTemp\\code\\",
+    "target_path": "d:\\wamp\\www\\netopes\\web-testing\\",
     "target_dirs": [
         "application",
-        "public_html" 
+        "public_html",
+        "public" 
     ], 
     "file_types": [
         ".php",
@@ -79,5 +27,58 @@
         ],    
         "files": [
         ]
-    }
+    },
+    "tasks": [
+        {
+            "module": "ajax_request_replacer",
+            "rules": [
+                {
+                    "method": "command_string",
+                    "regex": "(?m)'command_string'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
+                    "params": { "prefix_length": 31 }
+                },
+                {
+                    "method": "onclick_str",
+                    "regex": "(?m)'onclick_str'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
+                    "params": { "prefix_length": 28 }
+                },
+                {
+                    "method": "tab_ajax_content",
+                    "regex": "(?m)'content'=>\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\",\\s*$",
+                    "params": { "prefix_length": 24 }
+                },
+                {
+                    "method": "legacy_execute",
+                    "regex": "(?m)NApp::Ajax\\(\\)->LegacyExecute\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\);\\s*$",
+                    "params": { "prefix_length": 28 }
+                },
+                {
+                    "method": "action_legacy_prepare",
+                    "regex": "(?m)'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\),\\s*$",
+                    "params": { "prefix_length": 39, "action": "onclick", "end_char": "," }
+                },
+                {
+                    "method": "action_legacy_prepare",
+                    "regex": "(?m)'onclick'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\)\\]\\s*$",
+                    "params": { "prefix_length": 39, "action": "onclick", "end_char": "]" }
+                },
+                {
+                    "method": "action_legacy_prepare",
+                    "regex": "(?m)'onchange'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\),\\s*$",
+                    "params": { "prefix_length": 39, "action": "onchange", "end_char": "," }
+                },
+                {
+                    "method": "action_legacy_prepare",
+                    "regex": "(?m)'onchange'=>NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\)\\]\\s*$",
+                    "params": { "prefix_length": 39, "action": "onchange", "end_char": "]" }
+                },
+                {
+                    "method": "echo_legacy_prepare",
+                    "regex": "(?m)\\=\\\"<\\?php echo NApp::Ajax\\(\\)->LegacyPrepare\\(\\s*?\\\"AjaxRequest\\((?:[\\s\\S]*?)\\)->.*\\\"\\);\\s*?\\?>\\s*\\\"",
+                    "params": { "prefix_length": 41 }
+                }
+
+            ]
+        }
+    ]
 }

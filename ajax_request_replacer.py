@@ -59,11 +59,8 @@ class ProcessorAdapter(BaseProcessorAdapter):
             p_params = p_list[2] if len(p_list) > 2 else ''            
             t_params = self.processExtraParamsString(p_params)
             pp_params = t_params['params']
-            pp_params += (', ' if len(pp_params) else '') + "'target': "
             if len(p_list) > 3:
-                pp_params += p_list[3].strip('" \t\n')
-            else:
-                pp_params += "''"
+                pp_params += (', ' if len(pp_params) else '') + "'target': " + p_list[3].strip('" \t\n')
             params += "'params': { " + pp_params + ' }'
             if len(t_params['aparams']):
                 params += ", 'arrayParams': [ " + t_params['aparams'] + ' ]'
@@ -71,29 +68,40 @@ class ProcessorAdapter(BaseProcessorAdapter):
         return { 'params': params, 'target_id': target_id, 'jparams': jparams, 'eparams': eparams }
 
     def command_string(self, data, extra_params):
-        params = self.ajaxParamsStringConvert(data[19:-2])
+        prefix_length = extra_params['prefix_length'] if isinstance(extra_params['prefix_length'], int) else 0
+        params = self.ajaxParamsStringConvert(data[prefix_length:].strip('," \t'))
         return "'ajax_command'=>\"{}\",\n'ajax_target_id'=>'{}',".format(params['params'], params['target_id'])
 
     def onclick_str(self, data, extra_params):
-        params = self.ajaxParamsStringConvert(data[19:-2])
+        prefix_length = extra_params['prefix_length'] if isinstance(extra_params['prefix_length'], int) else 0
+        params = self.ajaxParamsStringConvert(data[prefix_length:].strip('," \t'))
         return "'onclick_ajax_command'=>\"{}\",\n'onclick_target_id'=>'{}',".format(params['params'], params['target_id'])
 
     def tab_ajax_content(self, data, extra_params):
-        params = self.ajaxParamsStringConvert(data[19:-2])
+        prefix_length = extra_params['prefix_length'] if isinstance(extra_params['prefix_length'], int) else 0
+        params = self.ajaxParamsStringConvert(data[prefix_length:].strip('," \t'))
         return "'content_ajax_command'=>\"{}\",".format(params['params'])
 
     def legacy_execute(self, data, extra_params):
-        params = self.ajaxParamsStringConvert(data[52:-3])
+        prefix_length = extra_params['prefix_length'] if isinstance(extra_params['prefix_length'], int) else 0
+        data = data[prefix_length:]
+        data = data.replace('"AjaxRequest(','').strip(');" \t')
+        params = self.ajaxParamsStringConvert(data)
         return "NApp::Ajax()->Execute(\"{}\",'{}');".format(params['params'], params['target_id'])
     
     def action_legacy_prepare(self, data, extra_params):
-        params = self.ajaxParamsStringConvert(data[52:-3])
-        action = extra_params['action'] if isinstance(extra_params['action'], str) else ''
+        prefix_length = extra_params['prefix_length'] if isinstance(extra_params['prefix_length'], int) else 0
         end_char = extra_params['end_char'] if isinstance(extra_params['end_char'], str) else ''
+        data = data[prefix_length:]
+        data = data.replace('"AjaxRequest(','').strip('){}" \t'.format(end_char))
+        params = self.ajaxParamsStringConvert(data)
+        action = extra_params['action'] if isinstance(extra_params['action'], str) else ''
         return "'{}'=>NApp::Ajax()->Prepare(\"{}\",'{}'){}".format(action, params['params'], params['target_id'], end_char)
 
     def echo_legacy_prepare(self, data, extra_params):
-        params = self.ajaxParamsStringConvert(data[52:-3])
+        prefix_length = extra_params['prefix_length'] if isinstance(extra_params['prefix_length'], int) else 0
+        data = data[prefix_length:]
+        data = data.replace('"AjaxRequest(','').strip(');" ?>\t')
+        params = self.ajaxParamsStringConvert(data)
         return "=\"<?=NApp::Ajax()->Prepare(\"{}\",'{}')?>\"".format(params['params'], params['target_id'])
-
 
