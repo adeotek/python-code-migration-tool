@@ -1,11 +1,10 @@
 {
     "debug_mode": 11,
     "dry_run": false,
-    "target_path": "d:\\wamp\\www\\netopes\\web-testing\\",
+    "target_path": "d:\\wamp\\www\\netopes\\web\\",
     "target_dirs": [
         "application",
-        "public_html",
-        "public" 
+        "public_html"
     ], 
     "file_types": [
         ".php",
