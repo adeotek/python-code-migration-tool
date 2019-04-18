@@ -73,9 +73,9 @@ class CodeProcessor:
             cfile.close()
         if isinstance(file_content, str) and len(file_content) > 0:
             new_file_content = file_content
-            self._logger.logger.info('Processing file: [{}]...'.format(file))
+            # self._logger.logger.info('Processing file: [{}]...'.format(file))
             for adapter in adapters:
-                file_content = adapter.processData(data=file_content, results_count=results_count, dry_run=dry_run)
+                file_content = adapter.processData(data=file_content, results_count=results_count, dry_run=dry_run, file_name=file)
             if new_file_content != file_content:
                 with open(file, 'w', newline='\n') as cfile:
                     cfile.write(file_content)

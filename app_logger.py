@@ -50,6 +50,8 @@ class AppLogger:
     def addFileHandler(self, name, logs_path, level):
         # create new file handler
         if name not in self._handlers:
+            if os.path.isfile(os.path.join(logs_path, name)):
+                os.remove(os.path.join(logs_path, name))
             self._handlers[name] = logging.FileHandler(os.path.join(logs_path, name))
             self._handlers[name].setLevel(level)
             self._handlers[name].setFormatter(self.getFormatter())
