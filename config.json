@@ -1,0 +1,88 @@
+{
+    "debug_mode": 11,
+    "dry_run": false,
+    "target_path": "D:\\wamp\\www\\htss\\dkmed-web\\",
+    "target_dirs": [
+        "application",
+        "public"
+    ], 
+    "file_types": [
+        ".php",
+        ".phtml"
+    ],
+    "exceptions": {
+        "directories": [
+            ".cache",
+            ".logs",
+            "Configs",
+            "repository",
+            "tmp",
+            "vendor",
+            "lib",
+            "resources",
+            "css",
+            "js",
+            "images",
+            "DataProxies"
+        ],    
+        "files": [
+        ]
+    },
+    "tasks": [
+        {
+            "module": "ajax_request_replacer",
+            "rules": [
+                {
+                    "method": "legacy_prepare_string",
+                    "regex": "(?m)(')(command_string)('=>\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\",\\s*?)$",
+                    "params": { "new_prefix": "ajax_command", "sufix": "\n'ajax_target_id'=>{}," }
+                },
+                {
+                    "method": "legacy_prepare_string",
+                    "regex": "(?m)(')(onclick_str)('=>\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\",\\s*?)$",
+                    "params": { "new_prefix": "onclick_ajax_command", "sufix": "\n'onclick_target_id'=>{}," }
+                },
+                {
+                    "method": "legacy_prepare_string",
+                    "regex": "(?m)(')(content)('=>\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\",\\s*?)$",
+                    "params": { "new_prefix": "content_ajax_command" }
+                },
+                {
+                    "method": "legacy_execute_method",
+                    "regex": "(?m)(NApp::Ajax\\(\\)->)(LegacyExecute\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\);\\s*?)$",
+                    "params": {}
+                },
+                {
+                    "method": "legacy_prepare_method",
+                    "regex": "(?m)('onclick'=>NApp::Ajax\\(\\)->)(LegacyPrepare\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\),\\s*?)$",
+                    "params": {}
+                },
+                {
+                    "method": "legacy_prepare_method",
+                    "regex": "(?m)('onclick'=>NApp::Ajax\\(\\)->)(LegacyPrepare\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\),?\\s*?\\]\\);?\\s*?)$",
+                    "params": {}
+                },
+                {
+                    "method": "legacy_prepare_method",
+                    "regex": "(?m)('onchange'=>NApp::Ajax\\(\\)->)(LegacyPrepare\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\),\\s*?)$",
+                    "params": {}
+                },
+                {
+                    "method": "legacy_prepare_method",
+                    "regex": "(?m)('onchange'=>NApp::Ajax\\(\\)->)(LegacyPrepare\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\)\\]\\s*?)$",
+                    "params": {}
+                },
+                {
+                    "method": "legacy_prepare_method",
+                    "regex": "(?m)(\\=\\\"<\\?php echo NApp::Ajax\\(\\)->)(LegacyPrepare\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\);\\s*?\\?>\\s*?\\\")",
+                    "params": {}
+                },
+                {
+                    "method": "legacy_prepare_method",
+                    "regex": "(?m)(\\=NApp::Ajax\\(\\)->)(LegacyPrepare\\(\\s*?\\\")(AjaxRequest\\((?:[\\s\\S]*?)\\)->.*)(\\\")(\\);\\s*?)$",
+                    "params": {}
+                }
+            ]
+        }
+    ]
+}
